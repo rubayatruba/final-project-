@@ -1,42 +1,76 @@
 from sense_hat import SenseHat 
+from time import sleep
+
 
 sense = SenseHat()
+
 sense.clear()
+
 r = (255, 0, 0)  #color red 
-w = (0, 0 ,0) #blank color 
-# c = (0, 255, 255) end
-p = (128, 0, 128) #ball
-
-
+b = (0, 0 ,0) #blank color 
+p = (128, 0, 128) #ball 
+g = (0,255,0) #target green
+x = 1
+y = 1
 
 
 maze = [[r, r, r, r, r, r, r, r],
-        [r, w, w, w, w, w, w, r],
-        [r, r, r, w, w, r, w, r],
-        [r, w, r, w, w, r, r, r],
-        [r, w, w, w, w, w, w, r],
-        [r, w, w, r, r, r, w, r],
-        [r, w, r, w, w, w, w, r],
+        [r, b, b, b, b, b, b, r],
+        [r, r, r, b, b, r, b, r],
+        [r, b, r, b, b, r, r, r],
+        [r, b, b, b, b, b, b, r],
+        [r, b, b, r, r, r, b, r],
+        [r, b, r, g, b, b, b, r],
         [r, r, r, r, r, r, r, r]]
-
+    
 game_over = False
 
-def move_marble(pitch, roll, x, y):
-    new_x = x
+
+
+def move_marble(x, y):
+    global game_over
+    new_x = x 
     new_y = y
-    if 1 < pitch < 179:
-        new_x -= 1
-
-
+    if maze[y][x] == r:
+        sense.show_message("try again!")
+        game_over = True
     return new_x, new_y
+   
+
+
+        
+while game_over == False:
+    maze[y][x] = p
+    sense.set_pixels(sum(maze,[]))
+    o = sense.get_orientation()
+    for event in sense.stick.get_events():
+        maze[y][x] = b
+        if event.action == "pressed" and event.direction == "up": 
+            x,y = move_marble(x,y-1)
+        elif event.action == "pressed" and event.direction == "down":
+            x,y = move_marble (x,y+1)
+        if event.action == "pressed" and event.direction == "right":
+            x,y = move_marble (x+1, y)
+        elif event.action == "pressed" and event.direction == "left":
+            x,y = move_marble (x-1, y)
+    if maze[y][x] == g:
+        sense.show_message("win!")
+        game_over = True
+    
+
 
     
-while game_over == False:
-    o = sense.get_orientation()
-    pitch = o["pitch"]
-    roll = o["roll"]
-    maze[y][x] = w
-    sense.set_pixels(sum(maze,[]))
+    
+    
+    
+
+
+
+
+
+
+
+
 
 
 
